@@ -1,0 +1,13 @@
+/app/build
+/app/fossReliant
+/app/googlePlay
+/build
+/.gradle
+/.idea
+/projectFilesBackup
+*.iml
+signing.properties
+local.properties
+licenses.yml
+*.apk
+*.hprof
