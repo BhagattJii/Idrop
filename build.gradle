@@ -26,6 +26,7 @@ buildscript {
     repositories {
         google()
         mavenLocal()
+        maven { url 'https://plugins.gradle.org/m2/' }
     }
 
     dependencies {
@@ -36,13 +37,10 @@ buildscript {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath 'com.yanzhenjie.andserver:plugin:2.1.9'
+        classpath 'gradle.plugin.com.cookpad.android.plugin:plugin:1.2.6'
     }
 }
 
-plugins {
-    id "org.jetbrains.kotlin.android" version "1.4.20" apply false
-    id "com.cookpad.android.plugin.license-tools" version "1.2.6"
-}
 
 allprojects {
     repositories {
