@@ -21,7 +21,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'dagger.hilt.android.plugin'
-# (license-tools plugin disabled for CI speed)
+
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'com.yanzhenjie.andserver'
 
