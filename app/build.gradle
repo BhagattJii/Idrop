@@ -20,9 +20,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
-apply plugin: 'dagger.hilt.android.plugin'
+// SKIP apply plugin: 'dagger.hilt.android.plugin'
 
-apply plugin: 'androidx.navigation.safeargs.kotlin'
+// SKIP apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'com.yanzhenjie.andserver'
 
 android {
@@ -41,7 +41,8 @@ android {
                 keyAlias System.getenv("IDROP_KEY_ALIAS") ?: "idropkey"
                 keyPassword System.getenv("IDROP_KEYSTORE_PASS") ?: "idrop2026"
             }
-        }        gbDistribution {
+        }
+        gbDistribution {
             // In the root folder of the project, you can find the template properties file
             // named 'signing.properties.txt'. Rename it to 'signing.properties' to make use of it
             def signingPropertiesFile = project.rootProject.file('signing.properties')
