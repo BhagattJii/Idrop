@@ -20,6 +20,21 @@
     <!-- generalization start -->
     <style name="Theme.TrebleShot" parent="Theme.TrebleShot.Base" />
 
+    <style name="Theme.TrebleShot.WindowAnimation" parent="android:Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/window_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/window_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/window_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/window_close_exit</item>
+        <item name="android:taskOpenEnterAnimation">@anim/window_open_enter</item>
+        <item name="android:taskOpenExitAnimation">@anim/window_open_exit</item>
+        <item name="android:taskCloseEnterAnimation">@anim/window_close_enter</item>
+        <item name="android:taskCloseExitAnimation">@anim/window_close_exit</item>
+        <item name="android:taskToFrontEnterAnimation">@anim/window_open_enter</item>
+        <item name="android:taskToFrontExitAnimation">@anim/window_open_exit</item>
+        <item name="android:taskToBackEnterAnimation">@anim/window_close_enter</item>
+        <item name="android:taskToBackExitAnimation">@anim/window_close_exit</item>
+    </style>
+
     <style name="Theme.TrebleShot.NoActionBar" parent="Theme.TrebleShot.Base.NoActionBar" />
 
     <style name="Theme.TrebleShot.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.NoActionBar" />

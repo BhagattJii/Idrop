@@ -19,6 +19,7 @@
 <resources>
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
+        <item name="android:windowAnimationStyle">@style/Theme.TrebleShot.WindowAnimation</item>
         <item name="actionBarStyle">@style/Widget.TrebleShot.ActionBar</item>
         <item name="alertDialogTheme">@style/Theme.TrebleShot.Dialog</item>
         <item name="appBarLayoutStyle">@style/Widget.TrebleShot.AppBarLayout</item>
@@ -76,6 +77,7 @@
     </style>
 
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
+        <item name="android:windowAnimationStyle">@style/Theme.TrebleShot.WindowAnimation</item>
         <item name="actionBarStyle">@style/Widget.TrebleShot.ActionBar</item>
         <item name="alertDialogTheme">@style/Theme.TrebleShot.Dialog</item>
         <item name="appBarLayoutStyle">@style/Widget.TrebleShot.AppBarLayout</item>
