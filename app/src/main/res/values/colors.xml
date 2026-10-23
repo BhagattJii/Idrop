@@ -24,13 +24,13 @@
     <color name="colorControlNormal">#555</color>
     <color name="colorError">#E53935</color>
     <color name="colorOnPrimary">@color/colorControlNormal</color>
-    <color name="colorOnSecondary">@color/colorControlNormal</color>
+    <color name="colorOnSecondary">#ffffff</color>
     <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#ccc</color>
     <color name="colorPrimaryDark23">#ffffffff</color>
     <color name="colorSecondary">#5865F2</color>
     <color name="colorSurface">#ffffff</color>
-    <color name="windowBackground">#ffffff</color>
+    <color name="windowBackground">#F4F5FA</color>
     <!-- local coloring-->
     <color name="colorDonation">#f44336</color>
     <color name="colorDivider">#20808080</color>

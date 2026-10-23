@@ -26,15 +26,31 @@
         android:name="org.monora.uprotocol.client.android.fragment.ContentBrowserFragment"
         android:label="@string/sends">
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_contentBrowserFragment_to_prepareIndexFragment"
             app:destination="@id/prepareIndexFragment" />
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_contentBrowserFragment_to_webShareLauncherFragment"
             app:destination="@id/webShareLauncherFragment" />
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_contentBrowserFragment_to_selectionsFragment"
             app:destination="@id/selectionsFragment" />
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_contentBrowserFragment_to_nav_transfer_details"
             app:destination="@id/nav_transfer_details"
             app:popUpTo="@id/contentBrowserFragment"
@@ -49,6 +65,10 @@
         android:name="org.monora.uprotocol.client.android.fragment.content.transfer.PrepareIndexFragment"
         android:label="@string/preparing">
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_prepareIndexFragment_to_nav_pick_client"
             app:destination="@id/nav_pick_client">
             <argument

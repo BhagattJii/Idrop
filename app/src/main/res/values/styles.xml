@@ -123,7 +123,7 @@
         <item name="strokeWidth">1dp</item>
         <item name="cardElevation">0dp</item>
         <item name="cardBackgroundColor">@android:color/transparent</item>
-        <item name="cardCornerRadius">8dp</item>
+        <item name="cardCornerRadius">12dp</item>
     </style>
 
     <style name="Widget.TrebleShot.ProgressBar.Horizontal.Oval" parent="Widget.AppCompat.ProgressBar.Horizontal">
@@ -147,7 +147,7 @@
     </style>
 
     <style name="ShapeAppearanceOverlay.Rounded" parent="">
-        <item name="cornerSize">8dp</item>
+        <item name="cornerSize">12dp</item>
         <item name="cornerFamily">rounded</item>
     </style>
 

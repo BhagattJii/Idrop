@@ -29,9 +29,17 @@
             android:name="transfer"
             app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_transferDetailsFragment_to_TransferItemFragment"
             app:destination="@id/TransferItemFragment" />
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_transferDetailsFragment_to_clientDetailsFragment2"
             app:destination="@id/clientDetailsFragment2" />
     </fragment>

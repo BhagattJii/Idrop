@@ -2,13 +2,13 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/colorDivider" />
+            <solid android:color="#E4E6F8" />
         </shape>
     </item>
 
     <item android:bottom="1dp">
         <shape android:shape="rectangle">
-            <solid android:color="@color/windowBackground" />
+            <solid android:color="#EAECFA" />
         </shape>
     </item>
 </layer-list>

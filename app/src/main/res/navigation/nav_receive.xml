@@ -26,6 +26,10 @@
         android:name="org.monora.uprotocol.client.android.fragment.ReceiveFragment"
         android:label="@string/receive">
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/pick_client"
             app:destination="@id/nav_pick_client">
             <argument
@@ -34,9 +38,17 @@
                 android:defaultValue="Incoming" />
         </action>
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_receiveFragment_to_filePickerFragment"
             app:destination="@id/filePickerFragment" />
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_receiveFragment_to_nav_transfer_details"
             app:destination="@id/nav_transfer_details"
             app:popUpTo="@id/receiveFragment"
@@ -46,6 +58,10 @@
                 app:argType="org.monora.uprotocol.client.android.database.model.Transfer" />
         </action>
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_receiveFragment_to_webShareLauncherFragment3"
             app:destination="@id/webShareLauncherFragment3" />
     </fragment>

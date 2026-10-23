@@ -26,6 +26,10 @@
         android:name="org.monora.uprotocol.client.android.fragment.ManageClientsFragment"
         android:label="@string/manage_clients" >
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_manageDevicesFragment2_to_clientDetailsFragment3"
             app:destination="@id/clientDetailsFragment3" />
     </fragment>

@@ -26,6 +26,10 @@
         android:name="org.monora.uprotocol.client.android.fragment.PreferencesFragment"
         android:label="@string/preferences" >
         <action
+        app:enterAnim="@anim/enter_from_right"
+        app:exitAnim="@anim/exit_to_left"
+        app:popEnterAnim="@anim/enter_from_left"
+        app:popExitAnim="@anim/exit_to_right"
             android:id="@+id/action_preferencesFragment2_to_resetPreferencesFragment"
             app:destination="@id/resetPreferencesFragment" />
     </fragment>
