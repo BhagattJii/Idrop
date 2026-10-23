@@ -24,19 +24,19 @@ object AppConfig {
 
     const val DELAY_DEFAULT_NOTIFICATION = 1000
 
-    const val EMAIL_DEVELOPER = "trebleshot@monora.org"
+    const val EMAIL_DEVELOPER = "bhagattji@users.noreply.github.com"
 
-    const val URI_GOOGLE_PLAY = "https://play.google.com/store/apps/details?id=org.monora.uprotocol.client.android"
+    const val URI_GOOGLE_PLAY = "https://github.com/BhagattJii/Idrop"
 
-    const val URI_ORG_HOME = "https://monora.org"
+    const val URI_ORG_HOME = "https://github.com/BhagattJii/Idrop"
 
-    const val URI_REPO_APP = "https://github.com/trebleshot"
+    const val URI_REPO_APP = "https://github.com/BhagattJii/Idrop"
 
-    const val URI_GITHUB_UPROTOCOL = "https://github.com/uprotocol"
+    const val URI_GITHUB_UPROTOCOL = "https://github.com/BhagattJii/Idrop"
 
-    const val URI_TRANSLATE = "https://hosted.weblate.org/engage/TrebleShot/"
+    const val URI_TRANSLATE = "https://github.com/BhagattJii/Idrop"
 
-    const val URI_TELEGRAM_CHANNEL = "https://t.me/trebleshotNews"
+    const val URI_TELEGRAM_CHANNEL = "https://github.com/BhagattJii/Idrop"
 
     const val PREFIX_ACCESS_POINT = "ID_"
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about_uprotocol_content"><b> uprotocol </b> అనేది ఒక శ్వేచ్చా కంటెంట్ షేరింగ్ ప్రోటోకాల్, ఇది విభిన్న రకాలైన సాఫ్ట్‌వేర్‌లను ఒకరితో ఒకరు కమ్యూనికేట్ చేయడానికి మరియు కంటెంట్ షేర్ చేయడానికి అనుమతిస్తుంది. ఇది డిఫాల్ట్‌గా సురక్షితం మరియు స్థిరమైన API సెట్‌తో వస్తుంది.
+    <string name="about_uprotocol_content"><b> iDrop </b> అనేది ఒక శ్వేచ్చా కంటెంట్ షేరింగ్ ప్రోటోకాల్, ఇది విభిన్న రకాలైన సాఫ్ట్‌వేర్‌లను ఒకరితో ఒకరు కమ్యూనికేట్ చేయడానికి మరియు కంటెంట్ షేర్ చేయడానికి అనుమతిస్తుంది. ఇది డిఫాల్ట్‌గా సురక్షితం మరియు స్థిరమైన API సెట్‌తో వస్తుంది.
 \n
 \nడెవలపర్‌గా, మీరు దీన్ని సులభంగా సెటప్ చేయవచ్చు మరియు మీ యాప్‌కు కంటెంట్-షేరింగ్ కార్యాచరణను జోడించవచ్చు! </string>
     <string name="help">సహాయం</string>
@@ -29,8 +29,8 @@
     <string name="artists">కళాకారులు</string>
     <string name="albums">ఆల్బమ్‌లు</string>
     <string name="all_songs">అన్ని పాటలు</string>
-    <string name="about_uprotocol">uprotocol గురించి</string>
-    <string name="powered_by_uprotocol" formatted="false"><b> uprotocol </b> ద్వారా ఆధారితం</string>
+    <string name="about_uprotocol">iDrop గురించి</string>
+    <string name="powered_by_uprotocol" formatted="false"><b> iDrop </b> ద్వారా ఆధారితం</string>
     <string name="sender_wait_for_receiver_notice">స్వీకర్తలు మిమ్మల్ని ఇక్కడ ఎంచుకోవచ్చు</string>
     <string name="starting">ప్రారంభిస్తోంది…</string>
     <string name="sender_finishing">ముగిస్తుంది…</string>

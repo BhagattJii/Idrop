@@ -424,7 +424,7 @@
     <string name="mesg_qrScannerTextMode">QR kodları metin olarak gösterilecek</string>
     <string name="mesg_qrScannerDefaultMode">QR kodları için varsayılan eylemler uygulanacak</string>
     <string name="show_as_qr_code">QR Kodu Olarak Göster</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> farklı türden yazılımların haberleşmesini ve içerik aktarmasını mümkün kılan açık bir içerik paylaşım protokolüdür. Varsayılan olarak güvenlidir ve tutarlı bir API seti ile gelir.
+    <string name="about_uprotocol_content"><b>iDrop</b> farklı türden yazılımların haberleşmesini ve içerik aktarmasını mümkün kılan açık bir içerik paylaşım protokolüdür. Varsayılan olarak güvenlidir ve tutarlı bir API seti ile gelir.
 \n
 \nGeliştirici olarak kolaylıkla kurup uygulamanıza içerik paylaşım desteği ekleyebilirsiniz. </string>
     <string name="pick_the_sender">Gönderici Seç</string>
@@ -450,8 +450,8 @@
     <string name="artists">Sanatçılar</string>
     <string name="albums">Albümler</string>
     <string name="all_songs">Tüm Şarkılar</string>
-    <string name="about_uprotocol">uprotocol Hakkında</string>
-    <string name="powered_by_uprotocol" formatted="false"><b>uprotocol</b> ile güçlendirildi</string>
+    <string name="about_uprotocol">iDrop Hakkında</string>
+    <string name="powered_by_uprotocol" formatted="false"><b>iDrop</b> ile güçlendirildi</string>
     <string name="sender_wait_for_receiver_notice">Alıcılar sizi burada seçebilir</string>
     <string name="starting">Başlatılıyor…</string>
     <string name="sender_finishing">Tamamlıyor…</string>

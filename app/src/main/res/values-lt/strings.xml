@@ -122,11 +122,11 @@
     <string name="album_art">Albumų viršeliai</string>
     <string name="artists">Atlikėjai</string>
     <string name="all_songs">Visos dainos</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> yra atviras turinio bendrinimo protokolas, leidžiantis įvairių tipų programinei įrangai bendrauti ir dalytis turiniu. Pagal numatytuosius nustatymus jis yra saugus ir pateikiamas su nuosekliu API rinkiniu.
+    <string name="about_uprotocol_content"><b>iDrop</b> yra atviras turinio bendrinimo protokolas, leidžiantis įvairių tipų programinei įrangai bendrauti ir dalytis turiniu. Pagal numatytuosius nustatymus jis yra saugus ir pateikiamas su nuosekliu API rinkiniu.
 \n
 \nKaip kūrėjas, galite lengvai jį nustatyti ir pridėti turinio bendrinimo funkciją savo programėlėje! </string>
-    <string name="about_uprotocol">Apie uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Paremta <b>uprotocol</b></string>
+    <string name="about_uprotocol">Apie iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Paremta <b>iDrop</b></string>
     <string name="sender_wait_for_receiver_notice">Gavėjai gali jus pasirinkti čia</string>
     <string name="starting">Pradedama…</string>
     <string name="sender_finishing">Baigiama…</string>

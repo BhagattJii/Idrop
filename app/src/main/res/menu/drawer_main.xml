@@ -53,7 +53,7 @@
         <item
             android:id="@+id/about_uprotocol"
             android:orderInCategory="6"
-            app:actionLayout="@layout/layout_uprotocol_banner"
+            app:actionLayout="@layout/layout_idrop_banner"
             tools:ignore="MenuTitle" />
 
     </group>

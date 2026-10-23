@@ -475,11 +475,11 @@
     <string name="artists">Artis</string>
     <string name="albums">Album</string>
     <string name="all_songs">Semua Lagu</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> adalah protokol berbagi konten terbuka yang memungkinkan berbagai jenis perangkat lunak untuk berkomunikasi dan berbagi konten. Ini aman secara bawaan dan dilengkapi dengan serangkaian API yang konsisten.
+    <string name="about_uprotocol_content"><b>iDrop</b> adalah protokol berbagi konten terbuka yang memungkinkan berbagai jenis perangkat lunak untuk berkomunikasi dan berbagi konten. Ini aman secara bawaan dan dilengkapi dengan serangkaian API yang konsisten.
 \n
 \nSebagai pengembang, Anda dapat mengaturnya dengan mudah dan menambahkan fungsionalitas berbagi konten ke aplikasi Anda! </string>
-    <string name="about_uprotocol">Tentang uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Didukung oleh <b>uprotocol</b></string>
+    <string name="about_uprotocol">Tentang iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Didukung oleh <b>iDrop</b></string>
     <string name="sender_wait_for_receiver_notice">Penerima dapat memilih Anda di sini</string>
     <string name="starting">Memulai…</string>
     <string name="sender_finishing">Menyelesaikan…</string>

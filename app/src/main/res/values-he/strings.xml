@@ -467,7 +467,7 @@
     <string name="mesg_qrScannerDefaultMode">חזרה לפעולה בררת המחדל של קודים מסוג QR</string>
     <string name="show_as_qr_code">הצגה כקוד QR</string>
     <string name="image_bucket_thumbnail">תמונה ממוזערת של דלי תמונות</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> הוא פרוטוקול פתוח לשיתוף תוכן שמאפשר לסוגים שונים של תכניות לתקשר ולשתף ביניהן תוכן. הוא מאובטח כבררת מחדל ויש לו ערכה קבועה של מנשקי API.
+    <string name="about_uprotocol_content"><b>iDrop</b> הוא פרוטוקול פתוח לשיתוף תוכן שמאפשר לסוגים שונים של תכניות לתקשר ולשתף ביניהן תוכן. הוא מאובטח כבררת מחדל ויש לו ערכה קבועה של מנשקי API.
 \n
 \nאם יש לך רקע בפיתוח, ניתן להקים אותו בקלות ולהוסיף תכונות שיתוף תוכן ליישומון שלך! </string>
     <string name="invalidate">פסילה</string>
@@ -492,8 +492,8 @@
     <string name="artists">אומנים</string>
     <string name="all_songs">כל השירים</string>
     <string name="rejecting">נדחה…</string>
-    <string name="about_uprotocol">על אודות uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">מופעל על ידי <b>uprotocol</b></string>
+    <string name="about_uprotocol">על אודות iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">מופעל על ידי <b>iDrop</b></string>
     <string name="sender_wait_for_receiver_notice">מקבלים יכולים לבחור בך כאן</string>
     <string name="starting">התחלה…</string>
     <string name="sender_finishing">בהליכי סיום…</string>

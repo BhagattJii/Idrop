@@ -387,9 +387,9 @@
     <string name="sender_finishing">Finishing…</string>
     <string name="starting">Starting…</string>
     <string name="sender_wait_for_receiver_notice">Recipients can pick you here</string>
-    <string name="powered_by_uprotocol" formatted="false">Powered by <b>uprotocol</b></string>
-    <string name="about_uprotocol">About uprotocol</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> is an open content sharing protocol letting different
+    <string name="powered_by_uprotocol" formatted="false">Powered by <b>iDrop</b></string>
+    <string name="about_uprotocol">About iDrop</string>
+    <string name="about_uprotocol_content"><b>iDrop</b> is an open content sharing protocol letting different
         types of software to communicate and share content. It is secure by default and comes with
         a consistent set of APIs.\n\nAs a developer, you can set it up easily and add content-sharing functionality
         to your app!

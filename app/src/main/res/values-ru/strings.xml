@@ -474,11 +474,11 @@
     <string name="album_art">Обложка альбома</string>
     <string name="artists">Исполнители</string>
     <string name="all_songs">Все песни</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> - это открытый протокол обмена, позволяющий различным типам программного обеспечения общаться и обмениваться контентом. Он безопасен по умолчанию и поставляется с согласованным набором API.
+    <string name="about_uprotocol_content"><b>iDrop</b> - это открытый протокол обмена, позволяющий различным типам программного обеспечения общаться и обмениваться контентом. Он безопасен по умолчанию и поставляется с согласованным набором API.
 \n
 \nКак разработчик, вы можете легко настроить его и добавить в свое приложение функцию обмена контентом ! </string>
-    <string name="about_uprotocol">О uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Работает на <b>uprotocol</b></string>
+    <string name="about_uprotocol">О iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Работает на <b>iDrop</b></string>
     <string name="starting">Запуск…</string>
     <string name="sender_finishing">Завершение…</string>
     <string name="sender_not_expecting">%s ничего не отправлял</string>

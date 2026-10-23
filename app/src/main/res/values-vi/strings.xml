@@ -472,11 +472,11 @@
     <string name="artists">Nghệ sĩ</string>
     <string name="albums">Album</string>
     <string name="all_songs">Tất cả bài hát</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> là một giao thức chia sẻ nội dung cho phép các loại phần mềm khác nhau có thể giao tiếp và chia sẻ nội dung. Nó là bảo mật theo mặc định và có một tập hợp nhất quán các API.
+    <string name="about_uprotocol_content"><b>iDrop</b> là một giao thức chia sẻ nội dung cho phép các loại phần mềm khác nhau có thể giao tiếp và chia sẻ nội dung. Nó là bảo mật theo mặc định và có một tập hợp nhất quán các API.
 \n
 \nVới tư cách là nhà phát triển, bạn có thể dễ dàng thiết lập nó và thêm chức năng chia sẻ nội dung vào ứng dụng của bạn! </string>
-    <string name="about_uprotocol">Giới thiệu về uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Được <b>uprotocol</b> vận hành</string>
+    <string name="about_uprotocol">Giới thiệu về iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Được <b>iDrop</b> vận hành</string>
     <string name="sender_wait_for_receiver_notice">Người nhận có thể chọn bạn ở đây</string>
     <string name="starting">Đang bắt đầu…</string>
     <string name="sender_finishing">Đang hoàn thành…</string>

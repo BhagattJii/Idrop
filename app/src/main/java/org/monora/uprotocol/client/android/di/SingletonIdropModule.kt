@@ -34,7 +34,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class SingletonUprotocolModule {
+abstract class SingletonIdropModule {
     @Singleton
     @Binds
     abstract fun provideConnectionFactory(

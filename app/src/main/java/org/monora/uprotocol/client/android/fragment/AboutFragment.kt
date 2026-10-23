@@ -45,17 +45,11 @@ class AboutFragment : Fragment(R.layout.layout_about) {
         view.findViewById<View>(R.id.githubButton).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_APP)))
         }
-        view.findViewById<View>(R.id.localizeButton).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TRANSLATE)))
-        }
-        view.findViewById<View>(R.id.telegramButton).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TELEGRAM_CHANNEL)))
-        }
         view.findViewById<View>(R.id.authorWeb).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://velitasali.com/")))
+            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/BhagattJii")))
         }
         view.findViewById<View>(R.id.authorGit).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/velitasali")))
+            startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/BhagattJii/Idrop")))
         }
     }
 

@@ -558,7 +558,7 @@
     <string name="scanner_qr_code_notice">QR-codescanner binnen vak plaatsen</string>
     <string name="trust">Vertrouwen</string>
     <string name="remove_transfer_question">Overdracht verwijderen\?</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> is een vrij protocol voor inhoudsdeling waarmee allerlei soorten software kan communiceren en inhoud kan uitwisselen. Het is van nature veilig en wordt geleverd met een consistente reeks api\'s.
+    <string name="about_uprotocol_content"><b>iDrop</b> is een vrij protocol voor inhoudsdeling waarmee allerlei soorten software kan communiceren en inhoud kan uitwisselen. Het is van nature veilig en wordt geleverd met een consistente reeks api\'s.
 \n
 \nAls ontwikkelaar is het eenvoudig om deze functionaliteit toe te voegen aan je app! </string>
     <string name="wifi_connection_notice">1- Open de wifi-instellingen;
@@ -591,8 +591,8 @@
     <string name="artists">Artiesten</string>
     <string name="albums">Albums</string>
     <string name="all_songs">Alle muziek</string>
-    <string name="about_uprotocol">Over uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Aangedreven door <b>uprotocol</b></string>
+    <string name="about_uprotocol">Over iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Aangedreven door <b>iDrop</b></string>
     <string name="sender_wait_for_receiver_notice">Hier kunnen ontvangers jou kiezen</string>
     <string name="starting">Bezig met starten…</string>
     <string name="sender_finishing">Bezig met afronden…</string>

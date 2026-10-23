@@ -29,9 +29,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.monora.uprotocol.client.android.R
 import org.monora.uprotocol.client.android.config.AppConfig
 
-class AboutUprotocolFragment : BottomSheetDialogFragment() {
+class AboutIdropFragment : BottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.layout_about_uprotocol, container, false)
+        return inflater.inflate(R.layout.layout_about_idrop, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

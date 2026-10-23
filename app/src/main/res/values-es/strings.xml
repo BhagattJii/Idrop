@@ -467,11 +467,11 @@
     <string name="mesg_qrScannerDefaultMode">Volver a las acciones predeterminadas para códigos QR</string>
     <string name="show_as_qr_code">Mostrar como código QR</string>
     <string name="sender_finishing">Finalizando…</string>
-    <string name="about_uprotocol">Acerca de uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Funciona con <b>uprotocol</b></string>
+    <string name="about_uprotocol">Acerca de iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Funciona con <b>iDrop</b></string>
     <string name="no_artists">No hay artistas aquí</string>
     <string name="no_albums">No hay álbumes aquí</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> es un protocolo abierto que permite que programas de distintas clases se comuniquen y compartan contenido. Es seguro de origen y viene con API coherentes.
+    <string name="about_uprotocol_content"><b>iDrop</b> es un protocolo abierto que permite que programas de distintas clases se comuniquen y compartan contenido. Es seguro de origen y viene con API coherentes.
 \n
 \nLos programadores pueden utilizarla con sencillez para añadir funcionalidades de compartición de datos a sus aplicaciones. </string>
     <string name="sender_not_expecting">%s no estaba enviando nada</string>

@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="@string/authors" />
+            android:text="@string/author" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/authorContainer"
@@ -76,7 +76,7 @@
                     android:id="@+id/author"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Veli Tasalı"
+                    android:text="BhagattJii"
                     android:textAppearance="?textAppearanceBody1"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
@@ -132,40 +132,10 @@
                 android:text="@string/organization"
                 app:icon="@drawable/ic_home_white_24dp"
                 app:iconGravity="top"
-                app:layout_constraintEnd_toStartOf="@+id/localizeButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/localizeButton"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="@string/help_translate"
-                app:icon="@drawable/ic_translate_white_24dp"
-                app:iconGravity="top"
-                app:layout_constraintBottom_toBottomOf="@+id/monoraHomeButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/monoraHomeButton"
-                app:layout_constraintTop_toTopOf="@+id/monoraHomeButton" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/telegramButton"
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="@string/telegram"
-                app:icon="@drawable/ic_telegram_white_24dp"
-                app:iconGravity="top"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/monoraHomeButton"
                 app:layout_constraintEnd_toStartOf="@+id/githubButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/monoraHomeButton" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/githubButton"
@@ -176,11 +146,9 @@
                 android:text="@string/github"
                 app:icon="@drawable/ic_github_circle_white_24dp"
                 app:iconGravity="top"
-                app:layout_constraintBottom_toBottomOf="@+id/telegramButton"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/telegramButton"
-                app:layout_constraintTop_toTopOf="@+id/telegramButton" />
+                app:layout_constraintStart_toEndOf="@+id/monoraHomeButton"
+                app:layout_constraintTop_toTopOf="@+id/monoraHomeButton" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

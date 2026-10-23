@@ -498,11 +498,11 @@
     <string name="artists">Artisti</string>
     <string name="albums">Album</string>
     <string name="all_songs">Tutte le Canzoni</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> è un protocollo aperto per la condivisione dei contenuti, che permette a diversi tipi di software di comunicare e condividere contenuti. È sicuro per impostazione predefinita e viene fornito con un insieme coerente di API.
+    <string name="about_uprotocol_content"><b>iDrop</b> è un protocollo aperto per la condivisione dei contenuti, che permette a diversi tipi di software di comunicare e condividere contenuti. È sicuro per impostazione predefinita e viene fornito con un insieme coerente di API.
 \n
 \nCome sviluppatore, puoi implementarlo facilmente nella tua app, aggiungendo funzionalità di condivisione dei contenuti! </string>
-    <string name="about_uprotocol">Informazioni su uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Powered by <b>uprotocol</b></string>
+    <string name="about_uprotocol">Informazioni su iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Powered by <b>iDrop</b></string>
     <string name="sender_wait_for_receiver_notice">I destinatari possono sceglierti qui</string>
     <string name="starting">Inizializzazione…</string>
     <string name="sender_finishing">Finalizzazione…</string>

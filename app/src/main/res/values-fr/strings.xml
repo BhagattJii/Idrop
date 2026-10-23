@@ -543,11 +543,11 @@
     <string name="ui_theme">Thème</string>
     <string name="crash_report">Rapport d’incident</string>
     <string name="remove_transfer_question">Supprimer le transfert \?</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> est un protocole ouvert de partage de contenu permettant à différents types de logiciels de communiquer et de partager du contenu. Il est sécurisé par défaut et s’accompagne d’un ensemble cohérent d’API.
+    <string name="about_uprotocol_content"><b>iDrop</b> est un protocole ouvert de partage de contenu permettant à différents types de logiciels de communiquer et de partager du contenu. Il est sécurisé par défaut et s’accompagne d’un ensemble cohérent d’API.
 \n
 \nEn tant que développeur, vous pouvez le configurer facilement et ajouter une fonctionnalité de partage de contenu à votre application ! </string>
-    <string name="about_uprotocol">À propos d’uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Propulsé par <b>uprotocol</b></string>
+    <string name="about_uprotocol">À propos d’iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Propulsé par <b>iDrop</b></string>
     <string name="folder_name">Nom du dossier</string>
     <string name="folder_not_writable">Le dossier est protégé en écriture</string>
     <string name="change_storage_folder">Changer le dossier de stockage</string>

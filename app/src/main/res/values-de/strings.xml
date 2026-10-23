@@ -475,7 +475,7 @@
     <string name="no_artists">Keine Künstler*innen</string>
     <string name="artist_picture">Künstler*innenbild</string>
     <string name="artists">Künstler*innen</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> ist ein quell-offenes Protokoll zum Teilen von Inhalten, dass es verschiedenen Typen von Software ermöglicht zu kommunizieren und Inhalte zu teilen. Es ist standardmäßig sicher wird mit einem einheitlichen Satz von APIs geliefert.
+    <string name="about_uprotocol_content"><b>iDrop</b> ist ein quell-offenes Protokoll zum Teilen von Inhalten, dass es verschiedenen Typen von Software ermöglicht zu kommunizieren und Inhalte zu teilen. Es ist standardmäßig sicher wird mit einem einheitlichen Satz von APIs geliefert.
 \n
 \nAls Entwickler*in können Sie es leicht einrichten und Ihrer Anwendung Funktionen für das Teilen von Inhalten hinzufügen! </string>
     <string name="waiting_receiver_approval_notice">Beginne sobald die/der Empfänger*in bestätigt hat…</string>
@@ -524,8 +524,8 @@
     <string name="album_art">Albumcover</string>
     <string name="albums">Alben</string>
     <string name="all_songs">Alle Lieder</string>
-    <string name="about_uprotocol">Über uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Powered by <b>uprotocol</b></string>
+    <string name="about_uprotocol">Über iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Powered by <b>iDrop</b></string>
     <string name="starting">Starte…</string>
     <string name="sender_finishing">Fertigstellen…</string>
     <string name="sender_not_expecting">%s hat nichts gesendet</string>

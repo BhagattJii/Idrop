@@ -93,7 +93,7 @@
         app:destination="@id/crashLogFragment" />
     <dialog
         android:id="@+id/aboutUprotocolFragment"
-        android:name="org.monora.uprotocol.client.android.fragment.AboutUprotocolFragment"
+        android:name="org.monora.uprotocol.client.android.fragment.AboutIdropFragment"
         android:label="@string/about_uprotocol" />
     <action
         android:id="@+id/action_global_aboutUprotocolFragment"

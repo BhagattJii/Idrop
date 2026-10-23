@@ -485,8 +485,8 @@
     <string name="no_albums">此处没有专辑</string>
     <string name="artists">艺术家</string>
     <string name="albums">专辑</string>
-    <string name="about_uprotocol">关于 uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">由 <b>uprotocol</b> 提供技术支持</string>
+    <string name="about_uprotocol">关于 iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">由 <b>iDrop</b> 提供技术支持</string>
     <string name="folder_name">文件夹名称</string>
     <string name="nickname">昵称</string>
     <string name="author">作者</string>

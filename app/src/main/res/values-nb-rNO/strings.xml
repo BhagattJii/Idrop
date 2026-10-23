@@ -544,7 +544,7 @@
     <string name="package_install_blocked">Kunne ikke installere pakke fordi programmet er blokkert</string>
     <string name="package_install_aborted">Avbrøt pakkeinstallasjon</string>
     <string name="image_bucket_thumbnail">Miniatyrbilde for bildebøtte</string>
-    <string name="about_uprotocol_content"><b>uprotocol</b> er en åpen delingsprotokoll for å la forskjellig programvare kommunisere og dele innhold. Det er sikkert som forvalg, og har et konsistent knippe API-er.
+    <string name="about_uprotocol_content"><b>iDrop</b> er en åpen delingsprotokoll for å la forskjellig programvare kommunisere og dele innhold. Det er sikkert som forvalg, og har et konsistent knippe API-er.
 \n
 \nSom utvikler kan du enkelt sette det opp og legge til innholdsdeling i ditt program. </string>
     <string name="web_share_description">Et grensesnitt for fildeling via nettlesere</string>
@@ -582,8 +582,8 @@
     <string name="error_no_route_to_host">Utilgjengelig adresse</string>
     <string name="package_install_incompatible">Pakken er ufullstendig</string>
     <string name="all_songs">Alle sanger</string>
-    <string name="about_uprotocol">Om uprotocol</string>
-    <string name="powered_by_uprotocol" formatted="false">Drevet av <b>uprotocol</b></string>
+    <string name="about_uprotocol">Om iDrop</string>
+    <string name="powered_by_uprotocol" formatted="false">Drevet av <b>iDrop</b></string>
     <string name="rejecting">Avslår …</string>
     <string name="clear_storage_list">Tøm lagringsliste</string>
     <string name="send_using_web_share_success_notice">Sendte «%s»</string>
