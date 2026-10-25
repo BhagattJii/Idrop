@@ -18,6 +18,9 @@ object NearbyPermissions {
         if (Build.VERSION.SDK_INT >= 33) {
             add(Manifest.permission.NEARBY_WIFI_DEVICES)
         }
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
     }.toTypedArray()
 
     fun hasAll(context: Context): Boolean = required().all {

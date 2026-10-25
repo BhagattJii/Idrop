@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.sp
 val Iris = Color(0xFF5865F2)
 val Cyan = Color(0xFF22D3EE)
 val Violet = Color(0xFFA855F7)
+val Mint = Color(0xFF34D399)
+val Amber = Color(0xFFFBBF24)
 val Ink = Color(0xFF070A14)
 val Panel = Color(0xFF0E1220)
 val PanelRaised = Color(0xFF151A2E)

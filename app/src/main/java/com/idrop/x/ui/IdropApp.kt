@@ -1,5 +1,6 @@
 package com.idrop.x.ui
 
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
@@ -9,6 +10,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,12 +19,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,23 +41,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Folder
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.TextFields
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -60,7 +73,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -72,6 +84,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -85,29 +98,39 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.idrop.x.BuildConfig
+import com.idrop.x.diagnostics.CheckStatus
+import com.idrop.x.diagnostics.SelfTestCheck
+import com.idrop.x.diagnostics.SelfTestState
 import com.idrop.x.nearby.NearbyPeer
 import com.idrop.x.nearby.NearbyPermissions
 import com.idrop.x.nearby.NearbyState
 import com.idrop.x.nearby.NearbyViewModel
+import com.idrop.x.nearby.TransferDirection
+import com.idrop.x.nearby.TransferRecord
+import com.idrop.x.nearby.TransferStatus
+import com.idrop.x.ui.theme.Amber
 import com.idrop.x.ui.theme.Aurora
 import com.idrop.x.ui.theme.Cyan
 import com.idrop.x.ui.theme.IdropTheme
 import com.idrop.x.ui.theme.Ink
 import com.idrop.x.ui.theme.Iris
+import com.idrop.x.ui.theme.Mint
 import com.idrop.x.ui.theme.OutlineSoft
 import com.idrop.x.ui.theme.Panel
 import com.idrop.x.ui.theme.PanelRaised
 import com.idrop.x.ui.theme.TextMuted
 import com.idrop.x.ui.theme.TextPrimary
 import com.idrop.x.ui.theme.Violet
+import com.idrop.x.util.formatBytes
+import com.idrop.x.util.formatRelativeTime
 import kotlin.math.PI
 import kotlin.math.cos
-import kotlin.math.max
 import kotlin.math.sin
-import com.idrop.x.BuildConfig
 
 private enum class IdropScreen {
     Home,
+    Transfers,
     Settings,
     Diagnostics,
 }
@@ -116,11 +139,19 @@ private enum class IdropScreen {
 fun IdropApp(vm: NearbyViewModel = viewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val deviceName by vm.deviceName.collectAsStateWithLifecycle()
+    val selfTest by vm.selfTest.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var screen by rememberSaveable { mutableStateOf(IdropScreen.Home) }
     var permissionsGranted by remember { mutableStateOf(NearbyPermissions.hasAll(context)) }
     var popupPeer by remember { mutableStateOf<NearbyPeer?>(null) }
+
+    var sendTarget by remember { mutableStateOf<NearbyPeer?>(null) }
+    var showSendSheet by remember { mutableStateOf(false) }
+    var textTarget by remember { mutableStateOf<NearbyPeer?>(null) }
+    var textDraft by remember { mutableStateOf("") }
+    var showTextDialog by remember { mutableStateOf(false) }
+    var pickTarget by remember { mutableStateOf<NearbyPeer?>(null) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -129,12 +160,20 @@ fun IdropApp(vm: NearbyViewModel = viewModel()) {
         if (permissionsGranted) vm.start()
     }
 
+    val filePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenMultipleDocuments(),
+    ) { uris ->
+        val target = pickTarget
+        if (target != null && uris.isNotEmpty()) vm.sendFiles(target, uris)
+        pickTarget = null
+    }
+
     LaunchedEffect(permissionsGranted) {
         if (permissionsGranted) vm.start()
     }
 
-    LaunchedEffect(state.peers, state.connected, permissionsGranted) {
-        if (permissionsGranted && popupPeer == null) {
+    LaunchedEffect(state.peers, state.connected, permissionsGranted, screen) {
+        if (permissionsGranted && screen == IdropScreen.Home && popupPeer == null) {
             popupPeer = state.peers.firstOrNull { peer ->
                 state.connected.none { it.endpointId == peer.endpointId }
             }
@@ -162,14 +201,25 @@ fun IdropApp(vm: NearbyViewModel = viewModel()) {
                         onStart = vm::start,
                         onStop = vm::stop,
                         onConnect = vm::connect,
-                        onSendTest = vm::sendTestFile,
+                        onSend = { peer ->
+                            sendTarget = peer
+                            showSendSheet = true
+                        },
+                        onDismissError = vm::clearError,
+                        onHistory = { screen = IdropScreen.Transfers },
                         onSettings = { screen = IdropScreen.Settings },
                         onDiagnostics = { screen = IdropScreen.Diagnostics },
+                    )
+
+                    IdropScreen.Transfers -> TransfersScreen(
+                        transfers = state.transfers,
+                        onBack = { screen = IdropScreen.Home },
                     )
 
                     IdropScreen.Settings -> SettingsScreen(
                         state = state,
                         deviceName = deviceName,
+                        onRename = vm::rename,
                         onBack = { screen = IdropScreen.Home },
                         onStart = vm::start,
                         onStop = vm::stop,
@@ -178,8 +228,11 @@ fun IdropApp(vm: NearbyViewModel = viewModel()) {
 
                     IdropScreen.Diagnostics -> DiagnosticsScreen(
                         state = state,
+                        selfTest = selfTest,
                         onBack = { screen = IdropScreen.Home },
                         onClear = vm::clearLogs,
+                        onRunTest = vm::runSelfTest,
+                        onResetTest = vm::resetSelfTest,
                     )
                 }
             }
@@ -194,10 +247,70 @@ fun IdropApp(vm: NearbyViewModel = viewModel()) {
                         onConnect = {
                             vm.connect(peer)
                             popupPeer = null
+                            screen = IdropScreen.Home
                         },
                         onDismiss = { popupPeer = null },
                     )
                 }
+            }
+
+            if (showSendSheet) {
+                sendTarget?.let { peer ->
+                    SendSheet(
+                        peer = peer,
+                        onFiles = {
+                            showSendSheet = false
+                            pickTarget = peer
+                            filePicker.launch(arrayOf("*/*"))
+                        },
+                        onPhotos = {
+                            showSendSheet = false
+                            pickTarget = peer
+                            filePicker.launch(arrayOf("image/*"))
+                        },
+                        onText = {
+                            showSendSheet = false
+                            textTarget = peer
+                            textDraft = ""
+                            showTextDialog = true
+                        },
+                        onTestFile = {
+                            showSendSheet = false
+                            vm.sendTestFile(peer)
+                        },
+                        onDismiss = { showSendSheet = false },
+                    )
+                }
+            }
+
+            if (showTextDialog) {
+                textTarget?.let { peer ->
+                    TextComposeDialog(
+                        peer = peer,
+                        text = textDraft,
+                        onTextChange = { textDraft = it.take(4000) },
+                        onSend = {
+                            vm.sendText(peer, textDraft)
+                            showTextDialog = false
+                            textDraft = ""
+                        },
+                        onDismiss = { showTextDialog = false },
+                    )
+                }
+            }
+
+            state.receivedText?.let { text ->
+                ReceivedTextDialog(
+                    text = text,
+                    onDismiss = vm::clearReceivedText,
+                )
+            }
+
+            state.lastSavedPath?.let { path ->
+                SavedFileDialog(
+                    path = path,
+                    onDismiss = vm::clearLastSaved,
+                )
             }
         }
     }
@@ -231,7 +344,7 @@ private fun AuroraBackground() {
         )
         drawCircle(
             brush = Brush.radialGradient(
-                colors = listOf(Color(0xFFA855F7).copy(alpha = 0.10f), Color.Transparent),
+                colors = listOf(Violet.copy(alpha = 0.10f), Color.Transparent),
                 center = Offset(size.width * 0.5f, size.height * 0.98f),
                 radius = size.width * 0.7f,
             ),
@@ -249,14 +362,19 @@ private fun HomeScreen(
     onStart: () -> Unit,
     onStop: () -> Unit,
     onConnect: (NearbyPeer) -> Unit,
-    onSendTest: (NearbyPeer) -> Unit,
+    onSend: (NearbyPeer) -> Unit,
+    onDismissError: () -> Unit,
+    onHistory: () -> Unit,
     onSettings: () -> Unit,
     onDiagnostics: () -> Unit,
 ) {
+    val connected = state.connected
     val nearby = state.peers.filter { peer ->
-        state.connected.none { it.endpointId == peer.endpointId }
+        connected.none { it.endpointId == peer.endpointId }
     }
+    val allNearby = (state.peers + connected).distinctBy { it.endpointId }
     val scanning = state.isAdvertising || state.isDiscovering
+    val activeTransfers = state.transfers.filter { it.status == TransferStatus.InProgress }
 
     Column(
         modifier = Modifier
@@ -268,15 +386,15 @@ private fun HomeScreen(
     ) {
         Spacer(Modifier.height(8.dp))
         Header(
+            onHistory = onHistory,
             onSettings = onSettings,
-            onDiagnostics = onDiagnostics,
         )
 
         Spacer(Modifier.height(10.dp))
 
         RadarPulse(
             active = scanning && permissionsGranted,
-            peerCount = nearby.size + state.connected.size,
+            peerCount = allNearby.size,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp),
@@ -286,8 +404,8 @@ private fun HomeScreen(
             text = when {
                 !permissionsGranted -> "Nearby access needed"
                 !scanning -> "Ready when you are"
-                nearby.isEmpty() && state.connected.isEmpty() -> "Looking for nearby devices"
-                else -> "${nearby.size + state.connected.size} nearby"
+                allNearby.isEmpty() -> "Looking for nearby devices"
+                else -> "${allNearby.size} nearby"
             },
             style = MaterialTheme.typography.headlineMedium,
             color = TextPrimary,
@@ -299,8 +417,8 @@ private fun HomeScreen(
             text = when {
                 !permissionsGranted -> "Allow Bluetooth + nearby Wi-Fi. No internet, no account."
                 !scanning -> "Start discovery to find iDrop devices around you."
-                nearby.isEmpty() && state.connected.isEmpty() -> "Bring both phones close. No router, no pairing."
-                else -> "Tap Connect. iDrop handles the rest automatically."
+                allNearby.isEmpty() -> "Bring both phones close. No router, no pairing."
+                else -> "Tap a device to connect, then send files or text."
             },
             style = MaterialTheme.typography.bodyMedium,
             color = TextMuted,
@@ -334,7 +452,7 @@ private fun HomeScreen(
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = RoundedCornerShape(18.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, OutlineSoft),
+                border = BorderStroke(1.dp, OutlineSoft),
             ) {
                 Icon(Icons.Rounded.Close, contentDescription = null, tint = TextMuted)
                 Spacer(Modifier.width(8.dp))
@@ -342,17 +460,37 @@ private fun HomeScreen(
             }
         }
 
-        if (state.connected.isNotEmpty()) {
-            Spacer(Modifier.height(26.dp))
-            SectionLabel("CONNECTED", state.connected.size)
+        state.lastError?.let { error ->
+            Spacer(Modifier.height(12.dp))
+            ErrorCard(message = error, onDismiss = onDismissError)
+        }
+
+        if (activeTransfers.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            SectionLabel("TRANSFERRING", activeTransfers.size)
             Spacer(Modifier.height(10.dp))
-            state.connected.forEach { peer ->
+            GlassCard {
+                activeTransfers.take(3).forEachIndexed { index, transfer ->
+                    if (index > 0) Spacer(Modifier.height(14.dp))
+                    ActiveTransferRow(transfer)
+                }
+            }
+        }
+
+        if (connected.isNotEmpty()) {
+            Spacer(Modifier.height(26.dp))
+            SectionLabel("CONNECTED", connected.size)
+            Spacer(Modifier.height(10.dp))
+            connected.forEach { peer ->
+                val active = state.transfers.firstOrNull {
+                    it.peerName == peer.name && it.status == TransferStatus.InProgress
+                }
                 DeviceCard(
                     peer = peer,
                     connected = true,
-                    progress = state.transferProgress[peer.endpointId],
+                    activeTransfer = active,
                     onConnect = {},
-                    onSendTest = { onSendTest(peer) },
+                    onSend = { onSend(peer) },
                 )
                 Spacer(Modifier.height(10.dp))
             }
@@ -369,9 +507,9 @@ private fun HomeScreen(
                 DeviceCard(
                     peer = peer,
                     connected = false,
-                    progress = state.transferProgress[peer.endpointId],
+                    activeTransfer = null,
                     onConnect = { onConnect(peer) },
-                    onSendTest = {},
+                    onSend = {},
                 )
                 Spacer(Modifier.height(10.dp))
             }
@@ -389,7 +527,7 @@ private fun HomeScreen(
             Icon(Icons.Rounded.Info, contentDescription = null, tint = TextMuted, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text(
-                "Diagnostics & logs",
+                "Self-test, logs & diagnostics",
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextMuted,
             )
@@ -399,7 +537,7 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun Header(onSettings: () -> Unit, onDiagnostics: () -> Unit) {
+private fun Header(onHistory: () -> Unit, onSettings: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
@@ -430,8 +568,8 @@ private fun Header(onSettings: () -> Unit, onDiagnostics: () -> Unit) {
             )
         }
         Spacer(Modifier.weight(1f))
-        IconButton(onClick = onDiagnostics) {
-            Icon(Icons.Rounded.Info, contentDescription = "Diagnostics", tint = TextMuted)
+        IconButton(onClick = onHistory) {
+            Icon(Icons.Rounded.History, contentDescription = "Transfers", tint = TextMuted)
         }
         IconButton(onClick = onSettings) {
             Icon(Icons.Rounded.Settings, contentDescription = "Settings", tint = TextMuted)
@@ -574,6 +712,37 @@ private fun PermissionCard(onRequestPermissions: () -> Unit) {
 }
 
 @Composable
+private fun ErrorCard(message: String, onDismiss: () -> Unit) {
+    val shape = RoundedCornerShape(20.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(Color(0xFF3A1420).copy(alpha = 0.72f))
+            .border(1.dp, Color(0xFFFF6B81).copy(alpha = 0.32f), shape)
+            .padding(start = 14.dp, top = 10.dp, bottom = 10.dp, end = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            Icons.Rounded.Warning,
+            contentDescription = null,
+            tint = Color(0xFFFF8A9B),
+            modifier = Modifier.size(18.dp),
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            message,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFFFFC2CB),
+            modifier = Modifier.weight(1f),
+        )
+        IconButton(onClick = onDismiss, modifier = Modifier.size(36.dp)) {
+            Icon(Icons.Rounded.Close, contentDescription = "Dismiss", tint = TextMuted, modifier = Modifier.size(16.dp))
+        }
+    }
+}
+
+@Composable
 private fun EmptyNearby(scanning: Boolean) {
     GlassCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -594,8 +763,11 @@ private fun EmptyNearby(scanning: Boolean) {
                     color = TextPrimary,
                 )
                 Text(
-                    if (scanning) "Keep both phones unlocked and close. This can take a few seconds."
-                    else "Start discovery to see nearby iDrop devices.",
+                    if (scanning) {
+                        "Keep both phones unlocked and close. This can take a few seconds."
+                    } else {
+                        "Start discovery to see nearby iDrop devices."
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextMuted,
                 )
@@ -608,9 +780,9 @@ private fun EmptyNearby(scanning: Boolean) {
 private fun DeviceCard(
     peer: NearbyPeer,
     connected: Boolean,
-    progress: Float?,
+    activeTransfer: TransferRecord?,
     onConnect: () -> Unit,
-    onSendTest: () -> Unit,
+    onSend: () -> Unit,
 ) {
     val shape = RoundedCornerShape(22.dp)
     Row(
@@ -637,51 +809,108 @@ private fun DeviceCard(
                 overflow = TextOverflow.Ellipsis,
             )
             Spacer(Modifier.height(2.dp))
-            Text(
-                text = if (connected) "Connected securely" else "iDrop device nearby",
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (connected) Cyan else TextMuted,
-            )
-            if (progress != null && progress < 1f) {
+            if (activeTransfer != null) {
+                Text(
+                    text = "${activeTransfer.fileName} · ${(activeTransfer.progress * 100).toInt()}%",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Cyan,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Spacer(Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(5.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.09f)),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(progress.coerceIn(0f, 1f))
-                            .fillMaxHeight()
-                            .background(Aurora),
-                    )
-                }
+                ProgressBar(progress = activeTransfer.progress)
+            } else {
+                Text(
+                    text = if (connected) "Connected securely" else "iDrop device nearby",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (connected) Cyan else TextMuted,
+                )
             }
         }
         Spacer(Modifier.width(10.dp))
         if (connected) {
             Button(
-                onClick = onSendTest,
+                onClick = onSend,
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Iris.copy(alpha = 0.9f)),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
             ) {
                 Icon(Icons.Rounded.Send, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(6.dp))
-                Text("5 MB", style = MaterialTheme.typography.labelLarge)
+                Text("Send", style = MaterialTheme.typography.labelLarge)
             }
         } else {
             OutlinedButton(
                 onClick = onConnect,
                 shape = RoundedCornerShape(14.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Iris.copy(alpha = 0.55f)),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                border = BorderStroke(1.dp, Iris.copy(alpha = 0.55f)),
+                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
             ) {
                 Text("Connect", color = TextPrimary, style = MaterialTheme.typography.labelLarge)
             }
         }
+    }
+}
+
+@Composable
+private fun ActiveTransferRow(transfer: TransferRecord) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(if (transfer.direction == TransferDirection.Outgoing) Iris.copy(alpha = 0.18f) else Cyan.copy(alpha = 0.16f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = if (transfer.direction == TransferDirection.Outgoing) {
+                    Icons.Rounded.ArrowUpward
+                } else {
+                    Icons.Rounded.ArrowDownward
+                },
+                contentDescription = null,
+                tint = if (transfer.direction == TransferDirection.Outgoing) Iris else Cyan,
+                modifier = Modifier.size(17.dp),
+            )
+        }
+        Spacer(Modifier.width(10.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                transfer.fileName,
+                style = MaterialTheme.typography.bodyLarge,
+                color = TextPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.height(6.dp))
+            ProgressBar(progress = transfer.progress)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "${formatBytes(transfer.bytesTransferred)} of ${formatBytes(transfer.totalBytes)} · ${transfer.peerName}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProgressBar(progress: Float, height: Int = 5) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height.dp)
+            .clip(CircleShape)
+            .background(Color.White.copy(alpha = 0.09f)),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(progress.coerceIn(0f, 1f))
+                .fillMaxHeight()
+                .background(Aurora),
+        )
     }
 }
 
@@ -796,7 +1025,7 @@ private fun ProximityDialog(peer: NearbyPeer, onConnect: () -> Unit, onDismiss: 
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "is right next to you and wants to connect.",
+                text = "is nearby and ready to connect.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextMuted,
                 textAlign = TextAlign.Center,
@@ -859,6 +1088,324 @@ private fun AvatarLarge(name: String) {
 }
 
 @Composable
+private fun SendSheet(
+    peer: NearbyPeer,
+    onFiles: () -> Unit,
+    onPhotos: () -> Unit,
+    onText: () -> Unit,
+    onTestFile: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.55f)),
+            contentAlignment = Alignment.BottomCenter,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                    .background(Brush.verticalGradient(listOf(PanelRaised, Panel)))
+                    .border(
+                        1.dp,
+                        Color.White.copy(alpha = 0.10f),
+                        RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+                    )
+                    .navigationBarsPadding()
+                    .padding(horizontal = 20.dp, vertical = 18.dp),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "SEND TO",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Cyan,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            peer.name,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = TextPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Rounded.Close, contentDescription = "Close", tint = TextMuted)
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                SendOption(
+                    icon = Icons.Rounded.Folder,
+                    title = "Files",
+                    subtitle = "Any file type · multiple selection",
+                    onClick = onFiles,
+                )
+                Spacer(Modifier.height(8.dp))
+                SendOption(
+                    icon = Icons.Rounded.Image,
+                    title = "Photos & videos",
+                    subtitle = "Pick from your gallery",
+                    onClick = onPhotos,
+                )
+                Spacer(Modifier.height(8.dp))
+                SendOption(
+                    icon = Icons.Rounded.TextFields,
+                    title = "Text message",
+                    subtitle = "Send a note or a link instantly",
+                    onClick = onText,
+                )
+                Spacer(Modifier.height(8.dp))
+                SendOption(
+                    icon = Icons.Rounded.Speed,
+                    title = "5 MB speed test",
+                    subtitle = "Measure real transfer speed",
+                    onClick = onTestFile,
+                )
+                Spacer(Modifier.height(10.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun SendOption(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    val shape = RoundedCornerShape(18.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(Color.White.copy(alpha = 0.05f))
+            .border(1.dp, Color.White.copy(alpha = 0.06f), shape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .clip(CircleShape)
+                .background(Iris.copy(alpha = 0.16f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = Cyan, modifier = Modifier.size(20.dp))
+        }
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(title, style = MaterialTheme.typography.titleMedium, color = TextPrimary)
+            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = TextMuted)
+        }
+    }
+}
+
+@Composable
+private fun TextComposeDialog(
+    peer: NearbyPeer,
+    text: String,
+    onTextChange: (String) -> Unit,
+    onSend: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(28.dp))
+                .background(PanelRaised)
+                .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(28.dp))
+                .imePadding()
+                .padding(22.dp),
+        ) {
+            Text("SEND TEXT", style = MaterialTheme.typography.labelSmall, color = Cyan)
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "To ${peer.name}",
+                style = MaterialTheme.typography.titleMedium,
+                color = TextPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.height(14.dp))
+            OutlinedTextField(
+                value = text,
+                onValueChange = onTextChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 120.dp),
+                placeholder = { Text("Type a message or paste a link…", color = TextMuted) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    cursorColor = Cyan,
+                    focusedBorderColor = Iris,
+                    unfocusedBorderColor = OutlineSoft,
+                ),
+            )
+            Spacer(Modifier.height(14.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    border = BorderStroke(1.dp, OutlineSoft),
+                ) {
+                    Text("Cancel", color = TextMuted)
+                }
+                Button(
+                    onClick = onSend,
+                    enabled = text.isNotBlank(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Iris),
+                ) {
+                    Icon(Icons.Rounded.Send, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text("Send")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReceivedTextDialog(text: String, onDismiss: () -> Unit) {
+    val clipboard = LocalClipboardManager.current
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(28.dp))
+                .background(Brush.verticalGradient(listOf(PanelRaised, Panel)))
+                .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(28.dp))
+                .padding(22.dp),
+        ) {
+            Text("TEXT RECEIVED", style = MaterialTheme.typography.labelSmall, color = Cyan)
+            Spacer(Modifier.height(12.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 260.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White.copy(alpha = 0.05f))
+                    .verticalScroll(rememberScrollState())
+                    .padding(14.dp),
+            ) {
+                Text(
+                    text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextPrimary,
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = { clipboard.setText(AnnotatedString(text)) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(46.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    border = BorderStroke(1.dp, OutlineSoft),
+                ) {
+                    Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(15.dp), tint = TextMuted)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Copy", color = TextPrimary)
+                }
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(46.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Iris),
+                ) {
+                    Text("Done")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SavedFileDialog(path: String, onDismiss: () -> Unit) {
+    val clipboard = LocalClipboardManager.current
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(28.dp))
+                .background(Brush.verticalGradient(listOf(PanelRaised, Panel)))
+                .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(28.dp))
+                .padding(22.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(66.dp)
+                    .clip(CircleShape)
+                    .background(Mint.copy(alpha = 0.14f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = Mint, modifier = Modifier.size(32.dp))
+            }
+            Spacer(Modifier.height(14.dp))
+            Text("File received", style = MaterialTheme.typography.headlineMedium, color = TextPrimary)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Saved safely on this phone",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextMuted,
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(
+                path,
+                style = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace, fontSize = 12.sp),
+                color = Cyan,
+                textAlign = TextAlign.Center,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.height(16.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = { clipboard.setText(AnnotatedString(path)) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(46.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    border = BorderStroke(1.dp, OutlineSoft),
+                ) {
+                    Text("Copy path", color = TextPrimary)
+                }
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(46.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Iris),
+                ) {
+                    Text("Done")
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun GlassCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
@@ -879,15 +1426,161 @@ private fun GlassCard(
 }
 
 @Composable
+private fun TransfersScreen(transfers: List<TransferRecord>, onBack: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(horizontal = 20.dp),
+    ) {
+        Spacer(Modifier.height(8.dp))
+        BackHeader(title = "Transfers", onBack = onBack)
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "Everything stays on your devices. Received files are saved in Downloads/iDrop.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextMuted,
+        )
+        Spacer(Modifier.height(16.dp))
+        if (transfers.isEmpty()) {
+            GlassCard {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(CircleShape)
+                            .background(PanelRaised),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(Icons.Rounded.History, contentDescription = null, tint = TextMuted, modifier = Modifier.size(22.dp))
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text("No transfers yet", style = MaterialTheme.typography.titleMedium, color = TextPrimary)
+                        Text(
+                            "Connect to a nearby phone and send your first file.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextMuted,
+                        )
+                    }
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(transfers) { transfer ->
+                    TransferRow(transfer)
+                }
+                item { Spacer(Modifier.height(12.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TransferRow(transfer: TransferRecord) {
+    val shape = RoundedCornerShape(18.dp)
+    val statusColor = when (transfer.status) {
+        TransferStatus.Complete -> Mint
+        TransferStatus.Failed -> Color(0xFFFF6B81)
+        TransferStatus.InProgress -> Amber
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(Color.White.copy(alpha = 0.045f))
+            .border(1.dp, Color.White.copy(alpha = 0.06f), shape)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .clip(CircleShape)
+                .background(if (transfer.direction == TransferDirection.Outgoing) Iris.copy(alpha = 0.16f) else Cyan.copy(alpha = 0.14f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = if (transfer.direction == TransferDirection.Outgoing) {
+                    Icons.Rounded.ArrowUpward
+                } else {
+                    Icons.Rounded.ArrowDownward
+                },
+                contentDescription = null,
+                tint = if (transfer.direction == TransferDirection.Outgoing) Iris else Cyan,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                transfer.fileName,
+                style = MaterialTheme.typography.titleMedium,
+                color = TextPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                "${if (transfer.direction == TransferDirection.Outgoing) "To" else "From"} ${transfer.peerName} · ${formatBytes(transfer.totalBytes)}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (transfer.status == TransferStatus.InProgress) {
+                Spacer(Modifier.height(8.dp))
+                ProgressBar(progress = transfer.progress)
+            }
+            transfer.savedPath?.let { path ->
+                Spacer(Modifier.height(3.dp))
+                Text(
+                    path,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 11.sp),
+                    color = Cyan.copy(alpha = 0.8f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+        Spacer(Modifier.width(10.dp))
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = when (transfer.status) {
+                    TransferStatus.Complete -> "Done"
+                    TransferStatus.Failed -> "Failed"
+                    TransferStatus.InProgress -> "${(transfer.progress * 100).toInt()}%"
+                },
+                style = MaterialTheme.typography.labelSmall,
+                color = statusColor,
+            )
+            Spacer(Modifier.height(3.dp))
+            Text(
+                formatRelativeTime(transfer.timestamp),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 11.sp),
+                color = TextMuted,
+            )
+        }
+    }
+}
+
+@Composable
 private fun SettingsScreen(
     state: NearbyState,
     deviceName: String,
+    onRename: (String) -> Unit,
     onBack: () -> Unit,
     onStart: () -> Unit,
     onStop: () -> Unit,
     onDiagnostics: () -> Unit,
 ) {
-    var sensitivity by remember { mutableFloatStateOf(0.6f) }
+    var nameDraft by remember(deviceName) { mutableStateOf(deviceName) }
 
     Column(
         modifier = Modifier
@@ -918,26 +1611,39 @@ private fun SettingsScreen(
                     )
                 },
             )
-            Spacer(Modifier.height(14.dp))
-            SettingRow(
-                title = "Device name",
-                subtitle = deviceName,
+            Spacer(Modifier.height(16.dp))
+            Text("Device name", style = MaterialTheme.typography.titleMedium, color = TextPrimary)
+            Spacer(Modifier.height(2.dp))
+            Text(
+                "Shown to nearby phones",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextMuted,
             )
-            Spacer(Modifier.height(14.dp))
-            SettingRow(
-                title = "Proximity sensitivity",
-                subtitle = if (sensitivity > 0.7f) "Close range" else if (sensitivity > 0.4f) "Balanced" else "Wide range",
-            )
-            Slider(
-                value = sensitivity,
-                onValueChange = { sensitivity = it },
-                valueRange = 0f..1f,
-                colors = SliderDefaults.colors(
-                    thumbColor = Cyan,
-                    activeTrackColor = Iris,
-                    inactiveTrackColor = PanelRaised,
+            Spacer(Modifier.height(10.dp))
+            OutlinedTextField(
+                value = nameDraft,
+                onValueChange = { if (it.length <= 30) nameDraft = it },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    cursorColor = Cyan,
+                    focusedBorderColor = Iris,
+                    unfocusedBorderColor = OutlineSoft,
                 ),
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                TextButton(
+                    onClick = { onRename(nameDraft) },
+                    enabled = nameDraft.isNotBlank() && nameDraft.trim() != deviceName,
+                ) {
+                    Text("Save name", color = Cyan)
+                }
+            }
         }
 
         Spacer(Modifier.height(16.dp))
@@ -950,6 +1656,11 @@ private fun SettingsScreen(
             SettingRow(
                 title = "Transfer engine",
                 subtitle = "Nearby Connections • encrypted P2P",
+            )
+            Spacer(Modifier.height(14.dp))
+            SettingRow(
+                title = "Received files",
+                subtitle = "Downloads/iDrop on this phone",
             )
             Spacer(Modifier.height(14.dp))
             SettingRow(
@@ -975,7 +1686,7 @@ private fun SettingsScreen(
             )
             Spacer(Modifier.height(10.dp))
             TextButton(onClick = onDiagnostics) {
-                Text("Open diagnostics", color = Cyan)
+                Text("Open self-test & diagnostics", color = Cyan)
             }
         }
         Spacer(Modifier.height(20.dp))
@@ -1004,10 +1715,25 @@ private fun SettingRow(
 @Composable
 private fun DiagnosticsScreen(
     state: NearbyState,
+    selfTest: SelfTestState,
     onBack: () -> Unit,
     onClear: () -> Unit,
+    onRunTest: () -> Unit,
+    onResetTest: () -> Unit,
 ) {
     val clipboard = LocalClipboardManager.current
+    val context = LocalContext.current
+
+    val shareReport = {
+        if (selfTest.report.isNotBlank()) {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, "iDrop X self-test report")
+                putExtra(Intent.EXTRA_TEXT, selfTest.report)
+            }
+            context.startActivity(Intent.createChooser(intent, "Share self-test report"))
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -1018,65 +1744,84 @@ private fun DiagnosticsScreen(
     ) {
         Spacer(Modifier.height(8.dp))
         BackHeader(title = "Diagnostics", onBack = onBack)
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             StatusChip("Advertise", state.isAdvertising)
             StatusChip("Discover", state.isDiscovering)
             StatusChip("Peers", state.peers.isNotEmpty())
         }
         Spacer(Modifier.height(12.dp))
-        Text(
-            "Connected: ${state.connected.joinToString { it.name }.ifBlank { "none" }}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextMuted,
-        )
-        if (state.lastReceived != null) {
-            Spacer(Modifier.height(4.dp))
-            Text(
-                "Last received: ${state.lastReceived}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Cyan,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        Spacer(Modifier.height(14.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(
-                onClick = {
-                    clipboard.setText(AnnotatedString(state.logs.joinToString("\n")))
-                },
-                shape = RoundedCornerShape(14.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, OutlineSoft),
-            ) {
-                Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp), tint = TextMuted)
-                Spacer(Modifier.width(6.dp))
-                Text("Copy logs", color = TextPrimary)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item {
+                SelfTestCard(
+                    selfTest = selfTest,
+                    onRunTest = onRunTest,
+                    onResetTest = onResetTest,
+                    onShareReport = shareReport,
+                )
             }
-            OutlinedButton(
-                onClick = onClear,
-                shape = RoundedCornerShape(14.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, OutlineSoft),
-            ) {
-                Text("Clear", color = TextMuted)
-            }
-        }
-        Spacer(Modifier.height(12.dp))
-        if (state.logs.isEmpty()) {
-            GlassCard {
+            item {
                 Text(
-                    "No events yet. Start discovery and bring another phone close.",
+                    "Connected: ${state.connected.joinToString { it.name }.ifBlank { "none" }}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextMuted,
                 )
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
+            state.lastSavedPath?.let { path ->
+                item {
+                    Text(
+                        "Last saved: $path",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Cyan,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            item {
+                Spacer(Modifier.height(4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = { clipboard.setText(AnnotatedString(state.logs.joinToString("\n"))) },
+                        shape = RoundedCornerShape(14.dp),
+                        border = BorderStroke(1.dp, OutlineSoft),
+                    ) {
+                        Icon(Icons.Rounded.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp), tint = TextMuted)
+                        Spacer(Modifier.width(6.dp))
+                        Text("Copy logs", color = TextPrimary)
+                    }
+                    OutlinedButton(
+                        onClick = onClear,
+                        shape = RoundedCornerShape(14.dp),
+                        border = BorderStroke(1.dp, OutlineSoft),
+                    ) {
+                        Text("Clear", color = TextMuted)
+                    }
+                }
+            }
+            item {
+                Text(
+                    "EVENT LOG",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextMuted,
+                )
+            }
+            if (state.logs.isEmpty()) {
+                item {
+                    GlassCard {
+                        Text(
+                            "No events yet. Start discovery and bring another phone close.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextMuted,
+                        )
+                    }
+                }
+            } else {
                 items(state.logs) { line ->
                     Text(
                         text = line,
@@ -1088,8 +1833,132 @@ private fun DiagnosticsScreen(
                     )
                 }
             }
+            item { Spacer(Modifier.height(16.dp)) }
         }
-        Spacer(Modifier.height(12.dp))
+    }
+}
+
+@Composable
+private fun SelfTestCard(
+    selfTest: SelfTestState,
+    onRunTest: () -> Unit,
+    onResetTest: () -> Unit,
+    onShareReport: () -> Unit,
+) {
+    GlassCard {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Iris.copy(alpha = 0.16f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Rounded.Speed, contentDescription = null, tint = Cyan, modifier = Modifier.size(20.dp))
+            }
+            Spacer(Modifier.width(10.dp))
+            Column {
+                Text("One-tap self-test", style = MaterialTheme.typography.titleMedium, color = TextPrimary)
+                Text(
+                    "Checks radios, permissions, storage and a second phone.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextMuted,
+                )
+            }
+        }
+        Spacer(Modifier.height(14.dp))
+        Button(
+            onClick = onRunTest,
+            enabled = !selfTest.running,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(15.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Iris),
+        ) {
+            if (selfTest.running) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    strokeWidth = 2.dp,
+                    color = Color.White,
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Testing nearby radios…")
+            } else {
+                Icon(Icons.Rounded.CheckCircle, contentDescription = null, modifier = Modifier.size(17.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(if (selfTest.finished) "Run self-test again" else "Run self-test")
+            }
+        }
+        if (selfTest.checks.isNotEmpty()) {
+            Spacer(Modifier.height(14.dp))
+            selfTest.checks.forEach { check ->
+                SelfTestRow(check)
+                Spacer(Modifier.height(9.dp))
+            }
+        }
+        if (selfTest.finished) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(
+                    onClick = onShareReport,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(14.dp),
+                    border = BorderStroke(1.dp, Iris.copy(alpha = 0.55f)),
+                ) {
+                    Text("Share report", color = TextPrimary)
+                }
+                OutlinedButton(
+                    onClick = onResetTest,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(14.dp),
+                    border = BorderStroke(1.dp, OutlineSoft),
+                ) {
+                    Text("Reset", color = TextMuted)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SelfTestRow(check: SelfTestCheck) {
+    val color = when (check.status) {
+        CheckStatus.Pass -> Mint
+        CheckStatus.Warn -> Amber
+        CheckStatus.Fail -> Color(0xFFFF6B81)
+        CheckStatus.Running -> Iris
+        CheckStatus.Pending -> TextMuted
+    }
+    val label = when (check.status) {
+        CheckStatus.Pass -> "PASS"
+        CheckStatus.Warn -> "WARN"
+        CheckStatus.Fail -> "FAIL"
+        CheckStatus.Running -> "…"
+        CheckStatus.Pending -> "WAIT"
+    }
+    Row(verticalAlignment = Alignment.Top) {
+        Box(
+            modifier = Modifier
+                .padding(top = 5.dp)
+                .size(7.dp)
+                .clip(CircleShape)
+                .background(color),
+        )
+        Spacer(Modifier.width(9.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                check.title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = TextPrimary,
+            )
+            Text(
+                check.detail,
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                color = TextMuted,
+            )
+        }
+        Spacer(Modifier.width(8.dp))
+        Text(label, style = MaterialTheme.typography.labelSmall, color = color)
     }
 }
 
