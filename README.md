@@ -15,7 +15,7 @@ Grab the signed APK from the [latest release](https://github.com/BhagattJii/Idro
 
 - Package: `com.idrop.x`
 - Minimum Android: 8.0 (API 26)
-- Size: about 18 MB
+- Size: about 12 MB (signed release)
 - Signed release APK — installable on any compatible Android phone
 - Debug builds are also attached to every successful GitHub Actions run
 
