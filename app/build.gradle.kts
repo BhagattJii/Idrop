@@ -37,6 +37,9 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+        // Nearby 19.5.1 ships Kotlin 2.4 metadata, but exposes a Java API.
+        // The app compiles against the stable Java surface; skip the metadata gate.
+        freeCompilerArgs += "-Xskip-metadata-version-check"
     }
 
     buildFeatures {

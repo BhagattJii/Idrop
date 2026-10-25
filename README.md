@@ -34,7 +34,7 @@ Proximity RSSI popup, premium transfer animations, history, settings persistence
 ./gradlew assembleDebug
 ```
 
-APK: `app/build/app/outputs/apk/debug/app-debug.apk`
+APK: `app/build/outputs/apk/debug/app-debug.apk`
 
 A prebuilt debug APK is attached to every successful GitHub Actions run.
 
