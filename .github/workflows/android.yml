@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -40,9 +40,71 @@ jobs:
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
 
+      - name: Prepare release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.IDROP_KEYSTORE_BASE64 }}
+        run: |
+          set -e
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/idrop-release.jks"
+            test -s "$RUNNER_TEMP/idrop-release.jks"
+            echo "SIGNING=true" >> "$GITHUB_ENV"
+            echo "Release keystore decoded."
+          else
+            echo "SIGNING=false" >> "$GITHUB_ENV"
+            echo "No release keystore secret configured; release APK will be unsigned."
+          fi
+
+      - name: Build release APK
+        env:
+          IDROP_KEYSTORE_PATH: ${{ runner.temp }}/idrop-release.jks
+          IDROP_KEYSTORE_PASSWORD: ${{ secrets.IDROP_KEYSTORE_PASSWORD }}
+          IDROP_KEY_ALIAS: ${{ secrets.IDROP_KEY_ALIAS }}
+          IDROP_KEY_PASSWORD: ${{ secrets.IDROP_KEY_PASSWORD }}
+        run: |
+          set -e
+          if [ "$SIGNING" = "true" ]; then
+            ./gradlew assembleRelease --stacktrace
+          else
+            echo "Skipping signed release build."
+          fi
+
+      - name: Verify release signature
+        if: env.SIGNING == 'true'
+        run: |
+          set -e
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort | tail -n 1)"
+          "$APKSIGNER" verify --print-certs app/build/outputs/apk/release/app-release.apk
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: idrop-x-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      - name: Upload release APK
+        if: env.SIGNING == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: idrop-x-release
+          path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/v') && env.SIGNING == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          APK="app/build/outputs/apk/release/app-release.apk"
+          test -f "$APK"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$APK#iDrop-X-$GITHUB_REF_NAME.apk" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              "$APK#iDrop-X-$GITHUB_REF_NAME.apk" \
+              --title "iDrop X $GITHUB_REF_NAME" \
+              --generate-notes \
+              --verify-tag
+          fi

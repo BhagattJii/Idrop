@@ -4,6 +4,24 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Release signing material is injected by CI through environment variables.
+// Nothing secret is stored in the repository.
+val signingKeystorePath: String? = System.getenv("IDROP_KEYSTORE_PATH")
+    ?.takeIf { it.isNotBlank() }
+val signingStorePassword: String? = System.getenv("IDROP_KEYSTORE_PASSWORD")
+    ?.takeIf { it.isNotBlank() }
+val signingKeyAlias: String? = System.getenv("IDROP_KEY_ALIAS")
+    ?.takeIf { it.isNotBlank() }
+val signingKeyPassword: String? = System.getenv("IDROP_KEY_PASSWORD")
+    ?.takeIf { it.isNotBlank() }
+val releaseSigningAvailable: Boolean =
+    signingKeystorePath != null &&
+        file(signingKeystorePath).isFile &&
+        file(signingKeystorePath).length() > 0L &&
+        signingStorePassword != null &&
+        signingKeyAlias != null &&
+        signingKeyPassword != null
+
 android {
     namespace = "com.idrop.x"
     compileSdk = 35
@@ -20,6 +38,17 @@ android {
         }
     }
 
+    signingConfigs {
+        if (releaseSigningAvailable) {
+            create("release") {
+                storeFile = file(signingKeystorePath!!)
+                storePassword = signingStorePassword
+                keyAlias = signingKeyAlias
+                keyPassword = signingKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -27,6 +56,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            if (releaseSigningAvailable) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
