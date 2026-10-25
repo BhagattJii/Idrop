@@ -1,8 +1,8 @@
-# iDrop X
+# iDrop
 
 **Advanced offline AirDrop-style sharing for Android — MIT licensed, no accounts, no ads, no payments.**
 
-iDrop X is a brand-new project (not a LocalSend fork), built from the ground up around one simple flow:
+iDrop is a brand-new project (not a LocalSend fork), built from the ground up around one simple flow:
 
 1. Two phones come close.
 2. A popup appears automatically.
@@ -11,7 +11,7 @@ iDrop X is a brand-new project (not a LocalSend fork), built from the ground up 
 
 ## Download
 
-Grab the signed APK from the [latest release](https://github.com/BhagattJii/Idrop-X/releases/latest).
+Grab the signed APK from the [latest release](https://github.com/BhagattJii/Idrop/releases/latest).
 
 - Package: `com.idrop.x`
 - Minimum Android: 8.0 (API 26)
@@ -19,9 +19,9 @@ Grab the signed APK from the [latest release](https://github.com/BhagattJii/Idro
 - Signed release APK — installable on any compatible Android phone
 - Debug builds are also attached to every successful GitHub Actions run
 
-> Android may ask you to allow installs from your browser or file manager the first time. That is the normal sideload prompt; iDrop X has no Play Store dependency and no payment of any kind.
+> Android may ask you to allow installs from your browser or file manager the first time. That is the normal sideload prompt; iDrop has no Play Store dependency and no payment of any kind.
 
-## Features (v0.3.0)
+## Features (v0.4.0)
 
 - **Realtime close-range popup** — a small BLE beacon layer estimates distance from RSSI, and the popup appears when another iDrop phone is within roughly **2.5 m**. A discovery fallback keeps things working on phones where BLE advertising is unavailable.
 - **Automatic discovery** — both phones advertise and scan at the same time; no manual pairing, hotspot, or router.
@@ -39,7 +39,7 @@ Grab the signed APK from the [latest release](https://github.com/BhagattJii/Idro
 
 ## How to use
 
-1. Install iDrop X on two Android phones.
+1. Install iDrop on two Android phones.
 2. Open the app on both phones and allow nearby access.
 3. Keep both screens on and bring the phones close (about 1–2.5 m).
 4. When the popup appears, tap **Connect**.

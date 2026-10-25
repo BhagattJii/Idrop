@@ -252,7 +252,7 @@ fun buildSelfTestReport(
     val warned = checks.count { it.status == CheckStatus.Warn }
     val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())
     return buildString {
-        appendLine("iDrop X — self-test report")
+        appendLine("iDrop — self-test report")
         appendLine("Generated: $timestamp")
         appendLine("App: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
         appendLine("Device: ${Build.MANUFACTURER} ${Build.MODEL}")

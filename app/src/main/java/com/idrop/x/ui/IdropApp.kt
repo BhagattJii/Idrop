@@ -1790,7 +1790,7 @@ private fun SettingsScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Rounded.Info, contentDescription = null, tint = Cyan, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("About iDrop X", style = MaterialTheme.typography.titleMedium, color = TextPrimary)
+                Text("About iDrop", style = MaterialTheme.typography.titleMedium, color = TextPrimary)
             }
             Spacer(Modifier.height(8.dp))
             Text(
@@ -1844,7 +1844,7 @@ private fun DiagnosticsScreen(
         if (selfTest.report.isNotBlank()) {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, "iDrop X self-test report")
+                putExtra(Intent.EXTRA_SUBJECT, "iDrop self-test report")
                 putExtra(Intent.EXTRA_TEXT, selfTest.report)
             }
             context.startActivity(Intent.createChooser(intent, "Share self-test report"))
