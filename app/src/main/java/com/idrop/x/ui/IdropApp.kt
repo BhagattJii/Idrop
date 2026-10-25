@@ -1,6 +1,8 @@
 package com.idrop.x.ui
 
 import android.content.Intent
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
@@ -102,6 +104,7 @@ import com.idrop.x.BuildConfig
 import com.idrop.x.diagnostics.CheckStatus
 import com.idrop.x.diagnostics.SelfTestCheck
 import com.idrop.x.diagnostics.SelfTestState
+import com.idrop.x.nearby.BleStatus
 import com.idrop.x.nearby.NearbyPeer
 import com.idrop.x.nearby.NearbyPermissions
 import com.idrop.x.nearby.NearbyState
@@ -124,8 +127,10 @@ import com.idrop.x.ui.theme.TextPrimary
 import com.idrop.x.ui.theme.Violet
 import com.idrop.x.util.formatBytes
 import com.idrop.x.util.formatRelativeTime
+import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 private enum class IdropScreen {
@@ -145,6 +150,9 @@ fun IdropApp(vm: NearbyViewModel = viewModel()) {
     var screen by rememberSaveable { mutableStateOf(IdropScreen.Home) }
     var permissionsGranted by remember { mutableStateOf(NearbyPermissions.hasAll(context)) }
     var popupPeer by remember { mutableStateOf<NearbyPeer?>(null) }
+    var popupDistance by remember { mutableStateOf<Float?>(null) }
+    var dismissedPeerIds by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var proximityTick by remember { mutableStateOf(0L) }
 
     var sendTarget by remember { mutableStateOf<NearbyPeer?>(null) }
     var showSendSheet by remember { mutableStateOf(false) }
@@ -172,11 +180,85 @@ fun IdropApp(vm: NearbyViewModel = viewModel()) {
         if (permissionsGranted) vm.start()
     }
 
-    LaunchedEffect(state.peers, state.connected, permissionsGranted, screen) {
-        if (permissionsGranted && screen == IdropScreen.Home && popupPeer == null) {
-            popupPeer = state.peers.firstOrNull { peer ->
-                state.connected.none { it.endpointId == peer.endpointId }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(2_000L)
+            proximityTick++
+        }
+    }
+
+    LaunchedEffect(state.peers) {
+        val currentIds = state.peers.map { it.endpointId }.toSet()
+        dismissedPeerIds = dismissedPeerIds.intersect(currentIds)
+    }
+
+    LaunchedEffect(
+        state.peers,
+        state.connected,
+        state.beacons,
+        state.bleStatus,
+        permissionsGranted,
+        screen,
+        proximityTick,
+    ) {
+        if (!permissionsGranted || screen != IdropScreen.Home || popupPeer != null) {
+            return@LaunchedEffect
+        }
+        val candidates = state.peers.filter { peer ->
+            state.connected.none { it.endpointId == peer.endpointId } &&
+                peer.endpointId !in dismissedPeerIds
+        }
+        if (candidates.isEmpty()) return@LaunchedEffect
+
+        val now = System.currentTimeMillis()
+        val fresh = state.beacons.values.filter { now - it.lastSeen <= 7_000L }
+
+        fun distanceFor(peer: NearbyPeer): Float? {
+            val id = peer.proximityId ?: return null
+            return fresh.firstOrNull { it.id == id }?.distanceMeters
+        }
+
+        val close = candidates
+            .mapNotNull { peer -> distanceFor(peer)?.let { peer to it } }
+            .filter { it.second <= 2.5f }
+            .minByOrNull { it.second }
+
+        if (close != null) {
+            popupPeer = close.first
+            popupDistance = close.second
+            return@LaunchedEffect
+        }
+
+        fun fallback() {
+            val first = candidates.minByOrNull { it.discoveredAt }
+            popupPeer = first
+            popupDistance = null
+        }
+
+        when (state.bleStatus) {
+            BleStatus.Starting, BleStatus.Off -> {
+                val waited = candidates.minByOrNull { it.discoveredAt }
+                if (waited != null && now - waited.discoveredAt > 8_000L) fallback()
             }
+
+            BleStatus.Unavailable, BleStatus.Failed -> fallback()
+
+            BleStatus.Active, BleStatus.ScanOnly -> {
+                if (fresh.isEmpty()) {
+                    val waited = candidates.minByOrNull { it.discoveredAt }
+                    if (waited != null && now - waited.discoveredAt > 8_000L) fallback()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(popupPeer) {
+        if (popupPeer == null) return@LaunchedEffect
+        val vibrator = context.getSystemService(Vibrator::class.java)
+        if (vibrator?.hasVibrator() == true) {
+            vibrator.vibrate(
+                VibrationEffect.createOneShot(45L, VibrationEffect.DEFAULT_AMPLITUDE),
+            )
         }
     }
 
@@ -239,17 +321,28 @@ fun IdropApp(vm: NearbyViewModel = viewModel()) {
 
             popupPeer?.let { peer ->
                 Dialog(
-                    onDismissRequest = { popupPeer = null },
+                    onDismissRequest = {
+                        dismissedPeerIds = dismissedPeerIds + peer.endpointId
+                        popupPeer = null
+                        popupDistance = null
+                    },
                     properties = DialogProperties(usePlatformDefaultWidth = false),
                 ) {
                     ProximityDialog(
                         peer = peer,
+                        distanceMeters = popupDistance,
                         onConnect = {
+                            dismissedPeerIds = dismissedPeerIds + peer.endpointId
                             vm.connect(peer)
                             popupPeer = null
+                            popupDistance = null
                             screen = IdropScreen.Home
                         },
-                        onDismiss = { popupPeer = null },
+                        onDismiss = {
+                            dismissedPeerIds = dismissedPeerIds + peer.endpointId
+                            popupPeer = null
+                            popupDistance = null
+                        },
                     )
                 }
             }
@@ -375,6 +468,13 @@ private fun HomeScreen(
     val allNearby = (state.peers + connected).distinctBy { it.endpointId }
     val scanning = state.isAdvertising || state.isDiscovering
     val activeTransfers = state.transfers.filter { it.status == TransferStatus.InProgress }
+    val now = System.currentTimeMillis()
+
+    fun distanceFor(peer: NearbyPeer): Float? {
+        val id = peer.proximityId ?: return null
+        val beacon = state.beacons[id] ?: return null
+        return if (now - beacon.lastSeen <= 7_000L) beacon.distanceMeters else null
+    }
 
     Column(
         modifier = Modifier
@@ -489,6 +589,7 @@ private fun HomeScreen(
                     peer = peer,
                     connected = true,
                     activeTransfer = active,
+                    distanceMeters = null,
                     onConnect = {},
                     onSend = { onSend(peer) },
                 )
@@ -508,6 +609,7 @@ private fun HomeScreen(
                     peer = peer,
                     connected = false,
                     activeTransfer = null,
+                    distanceMeters = distanceFor(peer),
                     onConnect = { onConnect(peer) },
                     onSend = {},
                 )
@@ -781,6 +883,7 @@ private fun DeviceCard(
     peer: NearbyPeer,
     connected: Boolean,
     activeTransfer: TransferRecord?,
+    distanceMeters: Float?,
     onConnect: () -> Unit,
     onSend: () -> Unit,
 ) {
@@ -821,7 +924,11 @@ private fun DeviceCard(
                 ProgressBar(progress = activeTransfer.progress)
             } else {
                 Text(
-                    text = if (connected) "Connected securely" else "iDrop device nearby",
+                    text = when {
+                        connected -> "Connected securely"
+                        distanceMeters != null -> "${formatDistance(distanceMeters)} · ready to connect"
+                        else -> "iDrop device nearby"
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (connected) Cyan else TextMuted,
                 )
@@ -970,7 +1077,12 @@ private fun SectionLabel(label: String, count: Int) {
 }
 
 @Composable
-private fun ProximityDialog(peer: NearbyPeer, onConnect: () -> Unit, onDismiss: () -> Unit) {
+private fun ProximityDialog(
+    peer: NearbyPeer,
+    distanceMeters: Float?,
+    onConnect: () -> Unit,
+    onDismiss: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -1025,7 +1137,11 @@ private fun ProximityDialog(peer: NearbyPeer, onConnect: () -> Unit, onDismiss: 
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "is nearby and ready to connect.",
+                text = if (distanceMeters != null) {
+                    "is about ${formatDistance(distanceMeters)} and ready to connect."
+                } else {
+                    "is nearby and ready to connect."
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextMuted,
                 textAlign = TextAlign.Center,
@@ -1748,8 +1864,16 @@ private fun DiagnosticsScreen(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             StatusChip("Advertise", state.isAdvertising)
             StatusChip("Discover", state.isDiscovering)
-            StatusChip("Peers", state.peers.isNotEmpty())
+            StatusChip("Close-range", state.bleStatus == BleStatus.Active)
         }
+        Spacer(Modifier.height(8.dp))
+        val nearestBeacon = state.beacons.values.minByOrNull { it.distanceMeters }
+        Text(
+            text = "BLE proximity: ${state.bleStatus.name}" +
+                (nearestBeacon?.let { " · nearest ${formatDistance(it.distanceMeters)}" } ?: ""),
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextMuted,
+        )
         Spacer(Modifier.height(12.dp))
         LazyColumn(
             modifier = Modifier
@@ -1990,5 +2114,14 @@ private fun BackHeader(title: String, onBack: () -> Unit) {
         }
         Spacer(Modifier.width(4.dp))
         Text(title, style = MaterialTheme.typography.headlineMedium, color = TextPrimary)
+    }
+}
+
+private fun formatDistance(meters: Float): String {
+    val rounded = (meters * 10f).roundToInt() / 10f
+    return if (rounded < 1f) {
+        "${(rounded * 100f).roundToInt()} cm away"
+    } else {
+        "$rounded m away"
     }
 }

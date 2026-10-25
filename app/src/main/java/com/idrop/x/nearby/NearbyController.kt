@@ -28,10 +28,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
+import java.util.Locale
+import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
@@ -39,6 +42,8 @@ import java.util.concurrent.atomic.AtomicLong
 data class NearbyPeer(
     val endpointId: String,
     val name: String,
+    val proximityId: String? = null,
+    val discoveredAt: Long = System.currentTimeMillis(),
 )
 
 enum class TransferDirection { Incoming, Outgoing }
@@ -73,6 +78,8 @@ data class NearbyState(
     val receivedText: String? = null,
     val lastSavedPath: String? = null,
     val lastError: String? = null,
+    val bleStatus: BleStatus = BleStatus.Off,
+    val beacons: Map<String, ProximityBeacon> = emptyMap(),
     val logs: List<String> = emptyList(),
 )
 
@@ -94,6 +101,24 @@ class NearbyController(private val context: Context) {
 
     private val serviceId = "com.idrop.x.nearby.v1"
     private var myName = "iDrop"
+
+    private val proximityId = String.format(Locale.US, "%06X", Random().nextInt(0x1000000))
+    private val ble = BleProximity(context.applicationContext) { message -> log("BLE: $message") }
+
+    init {
+        scope.launch {
+            ble.status.collect { status ->
+                _state.update { it.copy(bleStatus = status) }
+            }
+        }
+        scope.launch {
+            ble.beacons.collect { beacons ->
+                _state.update { it.copy(beacons = beacons) }
+            }
+        }
+    }
+
+    private fun localName(): String = "$myName#$proximityId"
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
@@ -139,21 +164,21 @@ class NearbyController(private val context: Context) {
 
     private val connectionCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            val peer = NearbyPeer(endpointId = endpointId, name = info.endpointName)
+            val peer = peerFrom(endpointId, info.endpointName)
             _state.update { current ->
                 current.copy(peers = (current.peers + peer).distinctBy { it.endpointId })
             }
-            log("Connection request from ${info.endpointName}")
+            log("Connection request from ${peer.name}")
             client.acceptConnection(endpointId, payloadCallback)
                 .addOnFailureListener { error ->
-                    setError("Could not accept ${info.endpointName}: ${error.message}")
+                    setError("Could not accept ${peer.name}: ${error.message}")
                 }
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             if (result.status.isSuccess) {
                 val peer = _state.value.peers.firstOrNull { it.endpointId == endpointId }
-                    ?: NearbyPeer(endpointId = endpointId, name = endpointId)
+                    ?: NearbyPeer(endpointId = endpointId, name = "Nearby device")
                 _state.update { current ->
                     current.copy(
                         connected = (current.connected + peer).distinctBy { it.endpointId },
@@ -179,8 +204,8 @@ class NearbyController(private val context: Context) {
 
     private val discoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            val peer = NearbyPeer(endpointId = endpointId, name = info.endpointName)
-            log("Found ${info.endpointName}")
+            val peer = peerFrom(endpointId, info.endpointName)
+            log("Found ${peer.name}")
             _state.update { current ->
                 current.copy(peers = (current.peers + peer).distinctBy { it.endpointId })
             }
@@ -195,11 +220,12 @@ class NearbyController(private val context: Context) {
 
     fun start(name: String) {
         myName = name
+        val advertised = localName()
         if (!_state.value.isAdvertising) {
             val options = AdvertisingOptions.Builder()
                 .setStrategy(Strategy.P2P_CLUSTER)
                 .build()
-            client.startAdvertising(name, serviceId, connectionCallback, options)
+            client.startAdvertising(advertised, serviceId, connectionCallback, options)
                 .addOnSuccessListener {
                     _state.update { it.copy(isAdvertising = true, lastError = null) }
                     log("Advertising as $name")
@@ -222,6 +248,8 @@ class NearbyController(private val context: Context) {
                     setError("Discovery failed: ${error.message}")
                 }
         }
+
+        ble.start(proximityId)
     }
 
     fun rename(name: String) {
@@ -237,6 +265,7 @@ class NearbyController(private val context: Context) {
         client.stopAdvertising()
         client.stopDiscovery()
         client.stopAllEndpoints()
+        ble.stop()
         _state.update {
             it.copy(
                 isAdvertising = false,
@@ -250,7 +279,7 @@ class NearbyController(private val context: Context) {
 
     fun connect(peer: NearbyPeer) {
         log("Connecting to ${peer.name}")
-        client.requestConnection(myName, peer.endpointId, connectionCallback)
+        client.requestConnection(localName(), peer.endpointId, connectionCallback)
             .addOnFailureListener { error -> setError("Connection request failed: ${error.message}") }
     }
 
@@ -507,6 +536,19 @@ class NearbyController(private val context: Context) {
         }
     }
 
+    private fun peerFrom(endpointId: String, rawName: String): NearbyPeer {
+        val proximityId = PROXIMITY_SUFFIX.find(rawName)
+            ?.value
+            ?.removePrefix("#")
+            ?.uppercase(Locale.US)
+        val display = rawName.replace(PROXIMITY_SUFFIX, "").trim().ifBlank { rawName }
+        return NearbyPeer(
+            endpointId = endpointId,
+            name = display,
+            proximityId = proximityId,
+        )
+    }
+
     private fun peerName(endpointId: String): String {
         val current = _state.value
         return current.connected.firstOrNull { it.endpointId == endpointId }?.name
@@ -571,5 +613,6 @@ class NearbyController(private val context: Context) {
         const val FIVE_MB = 5 * 1024 * 1024
         const val META_PREFIX = "iDropMeta:"
         const val TEXT_PREFIX = "iDropText:"
+        val PROXIMITY_SUFFIX = Regex("#[0-9A-Fa-f]{6}$")
     }
 }
