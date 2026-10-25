@@ -1,0 +1,15 @@
+iDrop X
+Copyright (c) 2026 BhagattJii
+
+This project is licensed under the MIT License. See LICENSE.
+
+Third-party components:
+
+- AndroidX / Jetpack Compose — Apache License 2.0
+- Google Play Services Nearby Connections — free-to-use Google API;
+  the iDrop X source code itself remains MIT licensed.
+- Material Icons — Apache License 2.0
+- Kotlin / Kotlin Coroutines — Apache License 2.0
+
+iDrop X does not include or link code from LocalSend or any other
+AirDrop alternative codebase. It is an independent implementation.
