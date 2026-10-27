@@ -1,6 +1,18 @@
+<div align="center">
+
 # iDrop
 
 **Advanced offline AirDrop-style sharing for Android — MIT licensed, no accounts, no ads, no payments.**
+
+[![Release](https://img.shields.io/badge/release-v0.4.0-brightgreen?style=flat-square)](https://github.com/BhagattJii/Idrop/releases/latest)
+[![CI](https://github.com/BhagattJii/Idrop/actions/workflows/android.yml/badge.svg)](https://github.com/BhagattJii/Idrop/actions/workflows/android.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?style=flat-square&logo=kotlin)](https://kotlinlang.org/)
+[![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&logo=android)](https://developer.android.com/)
+
+</div>
+
+---
 
 iDrop is a brand-new project (not a LocalSend fork), built from the ground up around one simple flow:
 
@@ -95,8 +107,16 @@ The CI workflow builds debug and signed release APKs, verifies the release signa
 - Transfers go directly between the two phones over the local encrypted link.
 - The app stores only the device name you choose and the in-memory transfer list; received files go to `Downloads/iDrop`.
 
+## Contributing
+
+Pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the build steps, the rules that keep iDrop account-free and server-free, and the PR checklist.
+
+## Security
+
+Found a vulnerability? Report it privately via [GitHub Security Advisories](https://github.com/BhagattJii/Idrop/security/advisories/new) — see [SECURITY.md](SECURITY.md).
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Third-party notices are in [NOTICE](NOTICE).
 
-Built with love by BhagattJii.
+Built by [BhagattJii](https://github.com/BhagattJii).
