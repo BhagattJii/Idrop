@@ -1,0 +1,55 @@
+name: Bug report
+description: iDrop fails to discover, connect or transfer on a device
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Install on both phones
+        2. Enable Bluetooth and Wi-Fi
+        3. Bring the phones within 1 m
+        4. Popup never appears
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device model and Android version
+      placeholder: Pixel 8, Android 15
+
+  - type: dropdown
+    id: play-services
+    attributes:
+      label: Google Play services
+      options:
+        - Present and up to date
+        - Present but outdated
+        - Missing (Huawei / custom ROM)
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: In-app diagnostics output
+      description: Settings → Diagnostics → copy the event log. Remove your device name if you prefer.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: This report contains no personal files or sensitive content
+          required: true

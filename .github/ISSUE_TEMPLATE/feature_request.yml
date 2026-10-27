@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest a capability for iDrop
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can you not do today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints
+      description: iDrop stays account-free, ad-free and server-free.
+      options:
+        - label: This feature needs no account, no backend and no tracking
+        - label: This feature works without Google Play services, or degrades gracefully without it
